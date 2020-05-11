@@ -1,5 +1,6 @@
 package com.mastercard.commercial.track.bps.currency.demo.service;
 
+import com.mastercard.commercial.track.bps.currency.demo.model.enums.BPSCurrency;
 import com.mastercard.commercial.track.bps.currency.demo.model.enums.PaymentStatus;
 import com.mastercard.commercial.track.bps.currency.demo.persistence.entity.Payment;
 import com.mastercard.commercial.track.bps.currency.demo.service.PaymentDbService;
@@ -35,13 +36,17 @@ public class ConvertCurrencyService {
         this.restTemplate = restTemplate;
     }
 
-    public Payment updateReceivedPayment(Payment savedPayment) {
-        responseMap = restTemplate.getForObject(currencyFixerURL + "?access_key=" + accessKey + "&from=" + savedPayment.getCurrencySent().toString()
-                        + "&to=" + savedPayment.getCurrencyReceived().toString() + "&amount=" + Integer.toString(savedPayment.getTotalAmountSent()), new HashMap<>().getClass());
+    public int convertReceivedPayment(int totalAmountSent, BPSCurrency currencySent, BPSCurrency currencyReceived) {
+        responseMap = restTemplate.getForObject(currencyFixerURL + "?access_key=" + accessKey + "&from=" + currencySent.getName()
+                        + "&to=" + currencyReceived.getName() + "&amount=" + Integer.toString(totalAmountSent), new HashMap<>().getClass());
 
         resultAmount = responseMap.get("result").keySet().stream().findFirst().toString();
         totalAmountReceived = Double.parseDouble(resultAmount);
-        savedPayment.setTotalAmountSent((int)totalAmountReceived);
+        return (int) totalAmountReceived;
+    }
+
+    public Payment updatePayment(Payment savedPayment) {
+        savedPayment.setTotalAmountReceived(convertReceivedPayment(savedPayment.getTotalAmountSent(), savedPayment.getCurrencySent(), savedPayment.getCurrencyReceived()));
         savedPayment.setStatus(PaymentStatus.APPROVED);
         paymentDbService.persistPayment(savedPayment);
 

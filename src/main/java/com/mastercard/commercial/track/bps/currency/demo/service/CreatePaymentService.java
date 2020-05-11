@@ -28,7 +28,7 @@ public class CreatePaymentService {
     public PaymentResponseDTO execute(PaymentRequestDTO paymentRequestDTO) {
         Payment payment = modelMapper.map(paymentRequestDTO, Payment.class);
         Payment savedPayment = paymentDbService.persistPayment(payment.preparePaymentForInsertUpdate(PaymentStatus.RECEIVED));
-        savedPayment = convertCurrencyService.updateReceivedPayment(savedPayment);
+        savedPayment = convertCurrencyService.updatePayment(savedPayment);
         return PaymentUtil.getPaymentResponse(savedPayment);
     }
 }
