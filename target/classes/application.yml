@@ -1,0 +1,17 @@
+TRACK_BPS_DEMO_POSTGRES_DB_PASSWORD: Demo123
+TRACK_BPS_DEMO_POSTGRES_DB_USERNAME: postgres
+spring:
+  profiles:
+    include: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bpsdemodb
+
+server:
+  servlet:
+    contextPath: /demoproject/
+  port: 8080
+  ssl:
+    enabled: false
+currencyfixer:
+  url: http://data.fixer.io/api/convert
+  accessKey: b9ccf05657bbcf3d053fc1817fdc494c
